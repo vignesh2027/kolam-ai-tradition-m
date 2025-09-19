@@ -9,6 +9,12 @@ import { useTranslation } from '@/lib/translations';
 import { useKV } from '@github/spark/hooks';
 import { useAuth } from '@/hooks/use-auth';
 
+// Declare spark global for TypeScript
+declare const spark: {
+  llmPrompt: (strings: TemplateStringsArray, ...values: any[]) => string;
+  llm: (prompt: string, modelName?: string, jsonMode?: boolean) => Promise<string>;
+};
+
 interface ChatOverlayProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,39 +29,55 @@ export function ChatOverlay({ isOpen, onClose, language }: ChatOverlayProps) {
   const { user } = useAuth();
   const t = useTranslation(language);
 
-  // GitHub Spark API integration for mentor responses
+  // GitHub Spark LLM integration for accurate mentor responses
   const getAIResponse = async (userMessage: string): Promise<string> => {
     try {
-      const response = await fetch('/api/mentor', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          message: userMessage,
-          language: language
-        }),
-      });
+      // Create a comprehensive prompt for the Kolam AI mentor
+      const prompt = spark.llmPrompt`You are a wise and knowledgeable Kolam AI mentor, deeply versed in South Indian traditional art, sacred geometry, cultural practices, and drawing techniques. 
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
-      }
+CONTEXT: You are helping users understand and create kolam patterns - traditional geometric designs drawn with dots and lines that have deep spiritual and mathematical significance in Tamil culture.
 
-      const data = await response.json();
-      return data.message || "I apologize, but I'm having trouble responding right now. Please try again.";
+LANGUAGE: Respond in ${language === 'en' ? 'English' : 
+                       language === 'ta' ? 'Tamil with English transliteration when helpful' :
+                       language === 'hi' ? 'Hindi with English transliteration when helpful' : 
+                       'French'}.
+
+USER QUESTION: "${userMessage}"
+
+GUIDELINES FOR YOUR RESPONSE:
+- Be culturally respectful and authentic
+- Provide specific, actionable advice when discussing drawing techniques
+- Explain the spiritual/mathematical significance when relevant
+- Use warm, encouraging tone as a mentor would
+- Include practical tips for creating kolam patterns
+- Reference traditional patterns, festivals, or customs when appropriate
+- If asked about symmetry, explain the mathematical concepts clearly
+- If asked about colors, explain their cultural significance
+- If asked about tools or materials, provide authentic traditional methods
+- Keep responses focused and helpful, around 2-3 sentences
+- Use emojis sparingly and appropriately (🙏, 🌸, ✨)
+
+Remember: You are not just an AI, but a cultural guide helping preserve and share this beautiful art form.`;
+
+      // Call GitHub Spark's LLM API
+      const response = await spark.llm(prompt);
+      
+      return response || getLanguageBasedFallback();
     } catch (error) {
-      console.error('Error calling mentor API:', error);
-      
-      // Fallback response in case API fails
-      const fallbackResponses: Record<Language, string> = {
-        en: "I'm experiencing a connection issue. Let me share this: Kolam art is a beautiful blend of mathematics and spirituality, where every pattern reflects cosmic harmony.",
-        ta: "இணைப்பு சிக்கல் உள்ளது. இதைப் பகிர்ந்து கொள்கிறேன்: கோலம் கலை கணிதம் மற்றும் ஆன்மீகத்தின் அழகான கலவையாகும்.",
-        hi: "मुझे कनेक्शन की समस्या है। यह साझा करता हूं: कोलम कला गणित और आध्यात्म का सुंदर मिश्रण है।",
-        fr: "J'ai un problème de connexion. Permettez-moi de partager ceci : l'art kolam est un beau mélange de mathématiques et de spiritualité."
-      };
-      
-      return fallbackResponses[language];
+      console.error('Error calling GitHub Spark LLM:', error);
+      return getLanguageBasedFallback();
     }
+  };
+
+  const getLanguageBasedFallback = (): string => {
+    const fallbackResponses: Record<Language, string> = {
+      en: "🙏 I'm here to guide you through the sacred art of kolam. These geometric patterns connect us to cosmic harmony through dots, lines, and symmetry. Traditional kolams use rice flour and are drawn at dawn to invite prosperity and ward off negative energies. What specific aspect would you like to explore?",
+      ta: "🙏 கோலம் என்ற புனித கலையின் வழியாக உங்களை வழிநடத்த நான் இங்கே இருக்கிறேன். இந்த வடிவியல் வடிவங்கள் புள்ளிகள், கோடுகள் மற்றும் சமச்சீர் மூலம் பிரபஞ்ச இணக்கத்துடன் நம்மை இணைக்கின்றன. பாரம்பரிய கோலங்கள் அரிசி மாவு பயன்படுத்தி விடியற்காலையில் வரையப்படுகின்றன.",
+      hi: "🙏 मैं आपको कोलम की पवित्र कला के माध्यम से मार्गदर्शन करने के लिए यहाँ हूँ। ये ज्यामितीय पैटर्न बिंदुओं, रेखाओं और समरूपता के माध्यम से हमें ब्रह्मांडीय सामंजस्य से जोड़ते हैं। पारंपरिक कोलम चावल के आटे से बनाए जाते हैं और समृद्धि लाने के लिए सुबह खींचे जाते हैं।",
+      fr: "🙏 Je suis là pour vous guider à travers l'art sacré du kolam. Ces motifs géométriques nous relient à l'harmonie cosmique grâce aux points, aux lignes et à la symétrie. Les kolams traditionnels utilisent de la farine de riz et sont dessinés à l'aube pour inviter la prospérité."
+    };
+    
+    return fallbackResponses[language];
   };
 
   const scrollToBottom = () => {
@@ -72,12 +94,12 @@ export function ChatOverlay({ isOpen, onClose, language }: ChatOverlayProps) {
       const welcomeMessage: ChatMessage = {
         id: `msg_${Date.now()}`,
         content: language === 'en' ? 
-          "🙏 Welcome! I'm your Kolam AI mentor. Ask me about sacred geometry, traditional patterns, drawing techniques, or the cultural significance of kolam art." :
+          "🙏 Vanakkam! I'm your Kolam AI mentor, versed in centuries of sacred geometry and cultural wisdom. I can guide you through:\n\n✨ Traditional patterns and their meanings\n🔢 Mathematical symmetry (4, 6, 8, 12, 16-way)\n🎨 Drawing techniques and tools\n🌸 Festival-specific designs\n📿 Cultural significance and spirituality\n\nWhat would you like to explore in this ancient art form?" :
           language === 'ta' ?
-          "🙏 வணக்கம்! நான் உங்கள் கோலம் AI குரு. புனித வடிவவியல், பாரம்பரிய வடிவங்கள், வரைபட நுட்பங்கள் அல்லது கோலம் கலையின் கலாச்சார முக்கியத்துவம் பற்றி கேளுங்கள்." :
+          "🙏 வணக்கம்! நான் உங்கள் கோலம் AI குரு, பல நூற்றாண்டுகளின் புனித வடிவவியல் மற்றும் கலாச்சார ஞானத்தில் வல்லவன். நான் உங்களுக்கு வழிகாட்ட முடியும்:\n\n✨ பாரம்பரிய வடிவங்கள் மற்றும் அவற்றின் அர்த்தங்கள்\n🔢 கணித சமச்சீர் (4, 6, 8, 12, 16-வழி)\n🎨 வரைபட நுட்பங்கள் மற்றும் கருவிகள்\n🌸 திருவிழா சிறப்பு வடிவமைப்புகள்\n📿 கலாச்சார முக்கியத்துவம் மற்றும் ஆன்மீகம்" :
           language === 'hi' ?
-          "🙏 नमस्ते! मैं आपका कोलम AI गुरु हूं। मुझसे पवित्र ज्यामिति, पारंपरिक पैटर्न, चित्रकला तकनीक, या कोलम कला के सांस्कृतिक महत्व के बारे में पूछें।" :
-          "🙏 Bonjour ! Je suis votre mentor IA Kolam. Demandez-moi des informations sur la géométrie sacrée, les motifs traditionnels, les techniques de dessin ou la signification culturelle de l'art kolam.",
+          "🙏 नमस्ते! मैं आपका कोलम AI गुरु हूं, सदियों की पवित्र ज्यामिति और सांस्कृतिक ज्ञान में पारंगत। मैं आपका मार्गदर्शन कर सकता हूं:\n\n✨ पारंपरिक पैटर्न और उनके अर्थ\n🔢 गणितीय समरूपता (4, 6, 8, 12, 16-तरफा)\n🎨 चित्रकला तकनीक और उपकरण\n🌸 त्योहार-विशिष्ट डिज़ाइन\n📿 सांस्कृतिक महत्व और आध्यात्म" :
+          "🙏 Namaste ! Je suis votre mentor IA Kolam, versé dans des siècles de géométrie sacrée et de sagesse culturelle. Je peux vous guider à travers :\n\n✨ Motifs traditionnels et leurs significations\n🔢 Symétrie mathématique (4, 6, 8, 12, 16 voies)\n🎨 Techniques de dessin et outils\n🌸 Designs spécifiques aux festivals\n📿 Importance culturelle et spiritualité",
         sender: 'mentor',
         timestamp: new Date().toISOString(),
         language
@@ -249,22 +271,37 @@ export function ChatOverlay({ isOpen, onClose, language }: ChatOverlayProps) {
               language === 'hi' ? 'कोलम क्या है?' : 
               'Qu\'est-ce que le kolam ?',
               
-              language === 'en' ? 'Explain symmetry' : 
-              language === 'ta' ? 'சமச்சீரை விளக்கவும்' :
-              language === 'hi' ? 'समरूपता समझाएं' : 
-              'Expliquer la symétrie',
+              language === 'en' ? 'Explain 8-way symmetry' : 
+              language === 'ta' ? '8-வழி சமச்சீரை விளக்கவும்' :
+              language === 'hi' ? '8-तरफा समरूपता समझाएं' : 
+              'Expliquer la symétrie 8-voies',
               
-              language === 'en' ? 'Color meanings' : 
-              language === 'ta' ? 'நிற அர்த்தங்கள்' :
-              language === 'hi' ? 'रंग के अर्थ' : 
-              'Signification des couleurs'
+              language === 'en' ? 'Traditional colors meaning' : 
+              language === 'ta' ? 'பாரம்பரிய நிற அர்த்தம்' :
+              language === 'hi' ? 'पारंपरिक रंगों का अर्थ' : 
+              'Signification couleurs traditionnelles',
+
+              language === 'en' ? 'Best tools for drawing' : 
+              language === 'ta' ? 'வரைவதற்கான சிறந்த கருவிகள்' :
+              language === 'hi' ? 'चित्रकारी के लिए बेहतरीन उपकरण' : 
+              'Meilleurs outils pour dessiner',
+
+              language === 'en' ? 'Festival kolam patterns' : 
+              language === 'ta' ? 'திருவிழா கோலம் வடிவங்கள்' :
+              language === 'hi' ? 'त्योहार कोलम पैटर्न' : 
+              'Motifs kolam de festival',
+
+              language === 'en' ? 'How to start as beginner' : 
+              language === 'ta' ? 'ஆரம்பநிலையாளர் எவ்வாறு தொடங்குவது' :
+              language === 'hi' ? 'शुरुआती कैसे शुरुआत करें' : 
+              'Comment commencer en tant que débutant'
             ].map((question) => (
               <Button
                 key={question}
                 variant="outline"
                 size="sm"
                 onClick={() => setCurrentMessage(question)}
-                className="text-xs"
+                className="text-xs hover:bg-accent/20 transition-colors"
                 disabled={isLoading}
               >
                 {question}
