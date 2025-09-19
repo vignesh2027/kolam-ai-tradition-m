@@ -47,20 +47,35 @@
 - **Purpose**: Creates the magical experience of traditional kolam patterns with modern precision
 - **Success Criteria**: Users can create complete kolam patterns in under 10 minutes
 
-### AI Cultural Mentor
-- **Functionality**: Python Rasa chatbot providing cultural guidance and pattern explanations
-- **Purpose**: Preserves and shares traditional knowledge while users create
-- **Success Criteria**: Users learn at least one cultural fact per session
+### AI Cultural Mentor (GitHub Spark API)
+- **Functionality**: Intelligent chatbot implemented via GitHub Spark API providing real-time cultural guidance, pattern explanations, and drawing techniques
+- **Purpose**: Preserves and shares traditional knowledge while users create, accessible without external API dependencies
+- **Success Criteria**: Users learn at least one cultural fact per session and feel connected to kolam traditions
+- **Technical Implementation**: Serverless function at `/api/mentor` with rule-based responses covering symmetry, culture, colors, and patterns
 
 ### Multilingual Interface  
 - **Functionality**: Complete UI translation in English, Tamil, Hindi, French
 - **Purpose**: Makes the platform accessible to global Tamil diaspora and curious learners
 - **Success Criteria**: Non-English speakers can fully navigate and create
 
+### Enhanced Gallery Experience
+- **Functionality**: Three-tab gallery featuring curated kolam templates, educational reels/videos, and wellness benefits
+- **Purpose**: Comprehensive learning hub beyond just creation tools
+- **Success Criteria**: Users explore multiple templates and engage with educational content
+- **Components**: 
+  - 5 premium kolam templates with cultural significance
+  - 5 educational video reels (timelapse, tutorials, cultural demonstrations)
+  - 6 documented benefits of kolam practice (mental, spiritual, cultural)
+
 ### Mobile-First Design
 - **Functionality**: Touch-optimized drawing with responsive layout
-- **Purpose**: Accessibility on the devices people actually use
+- **Purpose**: Accessibility on the devices people actually use  
 - **Success Criteria**: Drawing experience feels natural on mobile phones
+
+### 8-Way Radial Symmetry Focus
+- **Functionality**: Default canvas setup with 8-way radial symmetry for immediate success
+- **Purpose**: Creates instant "magic moment" for new users and teaches core kolam principles
+- **Success Criteria**: First-time users create beautiful patterns within minutes
 
 ## Design Direction
 

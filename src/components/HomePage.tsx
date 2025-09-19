@@ -133,6 +133,102 @@ export function HomePage({ language, onNavigate, onChatToggle }: HomePageProps) 
         </div>
       </section>
 
+      {/* Featured Technique Section */}
+      <section className="py-16 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-accent via-primary to-secondary bg-clip-text text-transparent">
+              {language === 'en' && '✨ Try 8-Way Radial Symmetry'}
+              {language === 'ta' && '✨ 8-வழி கதிர்வீச்சு சமச்சீர் முயற்சி செய்யுங்கள்'}
+              {language === 'hi' && '✨ 8-दिशा रेडियल समरूपता आज़माएं'}
+              {language === 'fr' && '✨ Essayez la symétrie radiale à 8 directions'}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              {language === 'en' && 'Start your kolam journey with the most popular symmetry mode. Every stroke you draw creates 8 beautiful mirror reflections instantly!'}
+              {language === 'ta' && 'மிகவும் பிரபலமான சமச்சீர் முறையுடன் உங்கள் கோலம் பயணத்தைத் தொடங்குங்கள். நீங்கள் வரையும் ஒவ்வொரு கோடும் உடனடியாக 8 அழகான கண்ணாடி பிரதிபலிப்புகளை உருவாக்குகிறது!'}
+              {language === 'hi' && 'सबसे लोकप्रिय समरूपता मोड के साथ अपनी कोलम यात्रा शुरू करें। आपकी हर स्ट्रोक तुरंत 8 सुंदर मिरर रिफ्लेक्शन बनाती है!'}
+              {language === 'fr' && 'Commencez votre voyage kolam avec le mode de symétrie le plus populaire. Chaque trait que vous dessinez crée instantanément 8 beaux reflets miroir !'}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <Card className="p-8 bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 border-primary/30 glow-primary">
+              <div className="text-center">
+                <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
+                  <div className="w-16 h-16 border-4 border-white rounded-full relative">
+                    <div className="absolute inset-0 border-2 border-dashed border-white rounded-full animate-spin"></div>
+                    <div className="absolute top-0 left-1/2 w-0.5 h-8 bg-white -translate-x-0.5"></div>
+                    <div className="absolute bottom-0 left-1/2 w-0.5 h-8 bg-white -translate-x-0.5"></div>
+                    <div className="absolute left-0 top-1/2 w-8 h-0.5 bg-white -translate-y-0.5"></div>
+                    <div className="absolute right-0 top-1/2 w-8 h-0.5 bg-white -translate-y-0.5"></div>
+                  </div>
+                </div>
+                <h3 className="text-xl font-semibold mb-4">
+                  {language === 'en' && 'Perfect for Beginners'}
+                  {language === 'ta' && 'ஆரம்பநிலையாளர்களுக்கு ஏற்றது'}
+                  {language === 'hi' && 'शुरुआती लोगों के लिए परफेक्ट'}
+                  {language === 'fr' && 'Parfait pour les débutants'}
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  {language === 'en' && 'Draw one simple line and watch it bloom into a stunning mandala pattern. The 8-way symmetry creates instant masterpieces from the simplest strokes.'}
+                  {language === 'ta' && 'ஒரு எளிய கோட்டை வரைந்து அது ஒரு அழகான மண்டல வடிவமாக மலர்வதைப் பாருங்கள். 8-வழி சமச்சீர் எளிமையான கோடுகளிலிருந்து உடனடி மாஸ்டர்பீஸ்களை உருவாக்குகிறது.'}
+                  {language === 'hi' && 'एक सरल रेखा खींचें और इसे एक आश्चर्यजनक मंडल पैटर्न में खिलते देखें। 8-दिशा समरूपता सरल स्ट्रोक से तुरंत मास्टरपीस बनाती है।'}
+                  {language === 'fr' && 'Dessinez une ligne simple et regardez-la s\'épanouir en un magnifique motif de mandala. La symétrie à 8 directions crée des chefs-d\'œuvre instantanés à partir des traits les plus simples.'}
+                </p>
+                <Button 
+                  size="lg" 
+                  onClick={() => onNavigate('canvas')}
+                  className="glow-accent"
+                >
+                  {language === 'en' && 'Try it Now!'}
+                  {language === 'ta' && 'இப்போதே முயற்சி செய்யுங்கள்!'}
+                  {language === 'hi' && 'अभी कोशिश करें!'}
+                  {language === 'fr' && 'Essayez maintenant !'}
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="p-8 bg-gradient-to-br from-secondary/10 via-accent/10 to-primary/10 border-secondary/30 glow-secondary">
+              <h3 className="text-xl font-semibold mb-4">
+                {language === 'en' && '🗄️ Your Creations, Safely Stored'}
+                {language === 'ta' && '🗄️ உங்கள் படைப்புகள், பாதுகாப்பாக சேமிக்கப்பட்டுள்ளன'}
+                {language === 'hi' && '🗄️ आपकी रचनाएं, सुरक्षित रूप से संग्रहीत'}
+                {language === 'fr' && '🗄️ Vos créations, stockées en sécurité'}
+              </h3>
+              <div className="space-y-4 text-sm text-muted-foreground">
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p>
+                    {language === 'en' && 'All your kolam designs are automatically saved using GitHub\'s secure database system'}
+                    {language === 'ta' && 'உங்கள் அனைத்து கோலம் வடிவங்களும் GitHub இன் பாதுகாப்பான தரவுத்தள அமைப்பைப் பயன்படுத்தி தானாகவே சேமிக்கப்படுகின்றன'}
+                    {language === 'hi' && 'आपके सभी कोलम डिज़ाइन GitHub के सुरक्षित डेटाबेस सिस्टम का उपयोग करके स्वचालित रूप से सहेजे जाते हैं'}
+                    {language === 'fr' && 'Tous vos designs kolam sont automatiquement sauvegardés en utilisant le système de base de données sécurisé de GitHub'}
+                  </p>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
+                  <p>
+                    {language === 'en' && 'Access your art from any device, anywhere in the world'}
+                    {language === 'ta' && 'உலகில் எங்கிருந்தும், எந்த சாதனத்திலிருந்தும் உங்கள் கலையை அணுகவும்'}
+                    {language === 'hi' && 'दुनिया में कहीं से भी, किसी भी डिवाइस से अपनी कला तक पहुंचें'}
+                    {language === 'fr' && 'Accédez à votre art depuis n\'importe quel appareil, partout dans le monde'}
+                  </p>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-2 h-2 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
+                  <p>
+                    {language === 'en' && 'Chat history with AI mentor preserved for continuous learning'}
+                    {language === 'ta' && 'தொடர்ச்சியான கற்றலுக்கு AI வழிகாட்டியுடனான அரட்டை வரலாறு பாதுகாக்கப்படுகிறது'}
+                    {language === 'hi' && 'निरंतर सीखने के लिए AI गुरु के साथ चैट इतिहास संरक्षित'}
+                    {language === 'fr' && 'Historique de chat avec le mentor IA préservé pour un apprentissage continu'}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Cultural Context Section */}
       <section className="py-16 px-4 bg-card/30 backdrop-blur-sm">
         <div className="container mx-auto max-w-4xl text-center">

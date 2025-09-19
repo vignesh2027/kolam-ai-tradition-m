@@ -1,113 +1,148 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Image, Download, Eye } from '@phosphor-icons/react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Image, 
+  Download, 
+  Eye, 
+  Play, 
+  Heart, 
+  Star, 
+  Clock,
+  Sparkle,
+  Brain,
+  Palette,
+  TreeEvergreen,
+  Users
+} from '@phosphor-icons/react';
 import { Language } from '@/types';
 import { useTranslation } from '@/lib/translations';
+import { kolamTemplates, kolamReels, kolamBenefits } from '@/data/kolamData';
+import { useKV } from '@github/spark/hooks';
 
 interface GalleryPageProps {
   language: Language;
 }
 
-// Authentic kolam designs from Tamil tradition
-const kolamDesigns = [
-  {
-    id: '1',
-    name: 'Padi Kolam',
-    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9InBhZGkiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9Im9rbGNoKDAuNyAwLjE1IDYwKSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0idHJhbnNwYXJlbnQiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0ib2tsY2goMC4xNSAwLjA1IDI0MCkiLz48ZyBzdHJva2U9Im9rbGNoKDAuNyAwLjE1IDYwKSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjIwIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI0NSIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNzAiLz48cGF0aCBkPSJNMTAwIDMwTDEwMCAxNzBNMzAgMTAwTDE3MCAxMDBNNjIgNjJMMTM4IDEzOE02MiAxMzhMMTM4IDYyIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iNjAiIHI9IjUiIGZpbGw9Im9rbGNoKDAuNzUgMC4xOCAxODApIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTQwIiByPSI1IiBmaWxsPSJva2xjaCgwLjc1IDAuMTggMTgwKSIvPjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNSIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48Y2lyY2xlIGN4PSI2MCIgY3k9IjEwMCIgcj0iNSIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48L2c+PC9zdmc+',
-    tags: ['dotted', 'traditional', 'sacred'],
-    createdAt: 'Ancient Tamil Tradition',
-    strokeCount: 8,
-    description: 'Classic dotted kolam representing harmony and protection'
-  },
-  {
-    id: '2',
-    name: 'Lotus Kolam',
-    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImxvdHVzIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJva2xjaCgwLjc1IDAuMTggMTgwKSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0idHJhbnNwYXJlbnQiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0ib2tsY2goMC4xNSAwLjA1IDI0MCkiLz48ZyBzdHJva2U9Im9rbGNoKDAuNyAwLjE1IDYwKSIgc3Ryb2tlLXdpZHRoPSIyLjUiIGZpbGw9Im5vbmUiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwMCwxMDApIj48ZWxsaXBzZSByeD0iMTUiIHJ5PSI0NSIgdHJhbnNmb3JtPSJyb3RhdGUoMCkiLz48ZWxsaXBzZSByeD0iMTUiIHJ5PSI0NSIgdHJhbnNmb3JtPSJyb3RhdGUoNDUpIi8+PGVsbGlwc2Ugcng9IjE1IiByeT0iNDUiIHRyYW5zZm9ybT0icm90YXRlKDkwKSIvPjxlbGxpcHNlIHJ4PSIxNSIgcnk9IjQ1IiB0cmFuc2Zvcm09InJvdGF0ZSgxMzUpIi8+PGVsbGlwc2Ugcng9IjEwIiByeT0iMzAiIHRyYW5zZm9ybT0icm90YXRlKDIyLjUpIi8+PGVsbGlwc2Ugcng9IjEwIiByeT0iMzAiIHRyYW5zZm9ybT0icm90YXRlKDY3LjUpIi8+PGVsbGlwc2Ugcng9IjEwIiByeT0iMzAiIHRyYW5zZm9ybT0icm90YXRlKDExMi41KSIvPjxlbGxpcHNlIHJ4PSIxMCIgcnk9IjMwIiB0cmFuc2Zvcm09InJvdGF0ZSgxNTcuNSkiLz48L2c+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI4IiBmaWxsPSJva2xjaCgwLjc1IDAuMTggMTgwKSIvPjwvZz48L3N2Zz4=',
-    tags: ['lotus', 'spiritual', 'petals'],
-    createdAt: 'Classical Tamil Design',
-    strokeCount: 16,
-    description: 'Sacred lotus symbolizing purity and divine beauty'
-  },
-  {
-    id: '3',
-    name: 'Sikku Kolam',
-    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9InNpa2t1Ij48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJva2xjaCgwLjU1IDAuMiAyNSkiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9InRyYW5zcGFyZW50Ii8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9Im9rbGNoKDAuMTUgMC4wNSAyNDApIi8+PGcgc3Ryb2tlPSJva2xjaCgwLjcgMC4xNSA2MCkiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSI+PGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMTAiLz48Y2lyY2xlIGN4PSIxNDAiIGN5PSI2MCIgcj0iMTAiLz48Y2lyY2xlIGN4PSI2MCIgY3k9IjE0MCIgcj0iMTAiLz48Y2lyY2xlIGN4PSIxNDAiIGN5PSIxNDAiIHI9IjEwIi8+PHBhdGggZD0iTTcwIDYwQzg1IDYwIDEwMCA3NSAxMDAgMTAwUzExNSAxNDAgMTMwIDE0ME0xMzAgNjBDMTE1IDYwIDEwMCA3NSAxMDAgMTAwUzg1IDE0MCA3MCAxNDBNNjAgNzBDNjAgODUgNzUgMTAwIDEwMCAxMDBTMTQwIDExNSAxNDAgMTMwTTYwIDEzMEM2MCAxMTUgNzUgMTAwIDEwMCAxMDBTMTQwIDg1IDE0MCA3MCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNSIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48L2c+PC9zdmc+',
-    tags: ['interwoven', 'continuous', 'complex'],
-    createdAt: 'Traditional Weaving Style',
-    strokeCount: 12,
-    description: 'Intricate interwoven pattern representing life\'s interconnections'
-  },
-  {
-    id: '4',
-    name: 'Rangoli Star',
-    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9InN0YXIiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9Im9rbGNoKDAuNzUgMC4xOCAxODApIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSJ0cmFuc3BhcmVudCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJva2xjaCgwLjE1IDAuMDUgMjQwKSIvPjxnIHN0cm9rZT0ib2tsY2goMC43IDAuMTUgNjApIiBzdHJva2Utd2lkdGg9IjIuNSIgZmlsbD0ibm9uZSI+PHBhdGggZD0iTTEwMCAzMEwxMTUgNjVMMTUwIDY1TDEyMiA4OUwxMzIgMTI0TDEwMCAxMDBMNjggMTI0TDc4IDg5TDUwIDY1TDg1IDY1WiIvPjxwYXRoIGQ9Ik0xMDAgNDBMMTEwIDcwTDEzNSA3MEwxMTggODVMMTI0IDExMEwxMDAgOTZMNzYgMTEwTDgyIDg1TDY1IDcwTDkwIDcwWiIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNTUiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQwIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIyNSIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iOCIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48L2c+PC9zdmc+',
-    tags: ['star', 'geometric', 'festive'],
-    createdAt: 'Diwali Special Pattern',
-    strokeCount: 20,
-    description: 'Radiant star pattern for festivals and celebrations'
-  },
-  {
-    id: '5',
-    name: 'Peacock Kolam',
-    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9InBlYWNvY2siPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9Im9rbGNoKDAuNzUgMC4xOCAxODApIi8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9Im9rbGNoKDAuNyAwLjE1IDYwKSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0ib2tsY2goMC41NSAwLjIgMjUpIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9Im9rbGNoKDAuMTUgMC4wNSAyNDApIi8+PGcgc3Ryb2tlPSJva2xjaCgwLjcgMC4xNSA2MCkiIHN0cm9rZS13aWR0aD0iMi41IiBmaWxsPSJub25lIj48cGF0aCBkPSJNMTAwIDE2MEMxMDAgMTQwIDEyMCAxMzAgMTM1IDEyMEMxNDAgMTEwIDEzNSAxMDAgMTI1IDk1QzEzMCA4NSAxMjUgNzUgMTE1IDcwQzEyMCA2MCA5NSA1MCA4MCA2MEw2MCA4MEw3MCA5NUw2MCA5NUw3MCAxMDBMNjAgMTEwTDc1IDEyNUw2NSAxMzBMODAgMTQwTDkwIDE1MEMxMDAgMTYwIDEwMCAxNjAgMTAwIDE2MFoiLz48ZWxsaXBzZSBjeD0iMTMwIiBjeT0iODAiIHJ4PSIxNSIgcnk9IjEwIiBmaWxsPSJva2xjaCgwLjc1IDAuMTggMTgwKSIvPjxjaXJjbGUgY3g9IjEzNSIgY3k9IjgwIiByPSI0IiBmaWxsPSJva2xjaCgwLjU1IDAuMiAyNSkiLz48cGF0aCBkPSJNMTEwIDUwQzEyNSA0MCA5NSAzNSA4MCA0NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PGNpcmNsZSBjeD0iODAiIGN5PSI5NSIgcj0iMyIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48Y2lyY2xlIGN4PSI3NSIgY3k9IjEyMCIgcj0iMyIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48Y2lyY2xlIGN4PSI5MCIgY3k9IjE0MCIgcj0iMyIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48L2c+PC9zdmc+',
-    tags: ['peacock', 'bird', 'artistic'],
-    createdAt: 'Cultural Heritage Design',
-    strokeCount: 24,
-    description: 'Graceful peacock representing beauty and divine grace'
-  }
-];
-
 export function GalleryPage({ language }: GalleryPageProps) {
   const t = useTranslation(language);
+  const [activeTab, setActiveTab] = useState('templates');
+  const [likedReels, setLikedReels] = useKV<string[]>('liked-reels', []);
+
+  const getBenefitIcon = (iconName: string) => {
+    const iconMap = {
+      brain: Brain,
+      lotus: Sparkle,
+      heritage: TreeEvergreen,
+      palette: Palette,
+      peace: Heart,
+      community: Users
+    };
+    const IconComponent = iconMap[iconName as keyof typeof iconMap] || Sparkle;
+    return <IconComponent size={24} className="text-primary" />;
+  };
+
+  const handleLikeReel = (reelId: string) => {
+    setLikedReels(current => {
+      const currentArray = current || [];
+      return currentArray.includes(reelId) 
+        ? currentArray.filter(id => id !== reelId)
+        : [...currentArray, reelId];
+    });
+  };
 
   const getLocalizedText = (key: string) => {
     const texts: Record<string, Record<Language, string>> = {
       gallery: {
-        en: 'Gallery',
-        ta: 'தொகுப்பு',
-        hi: 'गैलरी',
-        fr: 'Galerie'
+        en: 'Kolam Gallery',
+        ta: 'கோலம் தொகுப்பு',
+        hi: 'कोलम गैलरी',
+        fr: 'Galerie Kolam'
       },
       templates: {
-        en: 'Traditional Kolam Collection',
-        ta: 'பாரம்பரிய கோலம் தொகுப்பு',
-        hi: 'पारंपरिक कोलम संग्रह',
-        fr: 'Collection de Kolam Traditionnels'
+        en: 'Templates',
+        ta: 'மாதிரிகள்',
+        hi: 'टेम्प्लेट',
+        fr: 'Modèles'
       },
-      myDesigns: {
-        en: 'My Designs',
-        ta: 'என் வடிவங்கள்',
-        hi: 'मेरे डिज़ाइन',
-        fr: 'Mes créations'
+      reels: {
+        en: 'Reels & Tutorials',
+        ta: 'ரீல்ஸ் & பயிற்சி',
+        hi: 'रील्स & ट्यूटोरियल',
+        fr: 'Reels & Tutoriels'
+      },
+      benefits: {
+        en: 'Benefits',
+        ta: 'நன்மைகள்',
+        hi: 'लाभ',
+        fr: 'Avantages'
       },
       viewDesign: {
         en: 'View Design',
-        ta: 'வடிவத்தைப் பார்க்கவும்',
+        ta: 'வடிவத்தைப் பார்',
         hi: 'डिज़ाइन देखें',
-        fr: 'Voir le design'
+        fr: 'Voir design'
       },
-      downloadDesign: {
-        en: 'Download',
-        ta: 'பதிவிறக்கம்',
-        hi: 'डाउनलोड',
-        fr: 'Télécharger'
+      useTemplate: {
+        en: 'Use Template',
+        ta: 'மாதிரி பயன்படுத்து',
+        hi: 'टेम्प्लेट उपयोग करें',
+        fr: 'Utiliser modèle'
       },
-      strokes: {
-        en: 'strokes',
-        ta: 'வரிகள்',
-        hi: 'स्ट्रोक',
-        fr: 'traits'
+      watch: {
+        en: 'Watch',
+        ta: 'பார்க்கவும்',
+        hi: 'देखें',
+        fr: 'Regarder'
+      },
+      views: {
+        en: 'views',
+        ta: 'பார்வைகள்',
+        hi: 'व्यूज',
+        fr: 'vues'
+      },
+      likes: {
+        en: 'likes',
+        ta: 'விருப்பங்கள்',
+        hi: 'लाइक्स',
+        fr: 'likes'
+      },
+      learnMore: {
+        en: 'Learn More',
+        ta: 'மேலும் அறிய',
+        hi: 'और जानें',
+        fr: 'En savoir plus'
       },
       exploreTemplates: {
-        en: 'Discover authentic traditional kolam patterns from Tamil culture. Each design carries deep spiritual meaning and has been passed down through generations. Click any pattern to start your own kolam journey.',
+        en: 'Discover authentic traditional kolam patterns from Tamil culture. Each design carries deep spiritual meaning and has been passed down through generations.',
         ta: 'தமிழ் பண்பாட்டின் உண்மையான பாரம்பரிய கோலம் வடிவங்களைக் கண்டறியுங்கள். ஒவ்வொரு வடிவமும் ஆழ்ந்த ஆன்மீக அர்த்தத்தைக் கொண்டுள்ளது.',
         hi: 'तमिल संस्कृति के प्रामाणिक पारंपरिक कोलम पैटर्न की खोज करें। प्रत्येक डिज़ाइन गहरा आध्यात्मिक अर्थ रखता है।',
         fr: 'Découvrez les véritables motifs traditionnels de kolam de la culture tamoule. Chaque design porte une signification spirituelle profonde.'
+      },
+      exploreReels: {
+        en: 'Watch inspiring kolam creation videos, tutorials, and cultural demonstrations. Learn techniques from masters and discover the art\'s rich heritage.',
+        ta: 'உத்வேகம் அளிக்கும் கோலம் உருவாக்கல் வீடியோக்கள், பயிற்சிகள் மற்றும் கலாச்சார நிகழ்ச்சிகளைப் பார்க்கவும்.',
+        hi: 'प्रेरणादायक कोलम निर्माण वीडियो, ट्यूटोरियल और सांस्कृतिक प्रदर्शन देखें। मास्टर्स से तकनीक सीखें।',
+        fr: 'Regardez des vidéos inspirantes de création de kolam, des tutoriels et des démonstrations culturelles.'
+      },
+      exploreBenefits: {
+        en: 'Discover the mental, spiritual, and cultural benefits of practicing kolam art. From stress relief to cultural connection, kolam offers holistic wellness.',
+        ta: 'கோலம் கலையைப் பயிற்சி செய்வதால் கிடைக்கும் மனம், ஆன்மீக மற்றும் கலாச்சார நன்மைகளைக் கண்டறியுங்கள்.',
+        hi: 'कोलम कला का अभ्यास करने के मानसिक, आध्यात्मिक और सांस्कृतिक लाभों की खोज करें।',
+        fr: 'Découvrez les bienfaits mentaux, spirituels et culturels de la pratique de l\'art kolam.'
       }
     };
     
     return texts[key]?.[language] || texts[key]?.en || key;
+  };
+
+  const formatNumber = (num: number) => {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toString();
   };
 
   return (
@@ -115,130 +150,224 @@ export function GalleryPage({ language }: GalleryPageProps) {
       <div className="container mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
             {getLocalizedText('gallery')}
           </h1>
-          <p className="text-muted-foreground text-lg max-w-3xl">
-            {getLocalizedText('exploreTemplates')}
-          </p>
         </div>
 
-        {/* Template Library Section */}
-        <section className="mb-12">
-          <div className="flex items-center space-x-3 mb-6">
-            <Image size={24} className="text-primary" />
-            <h2 className="text-2xl font-semibold">{getLocalizedText('templates')}</h2>
-          </div>
+        {/* Tabs Navigation */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 lg:grid-cols-3 mb-8">
+            <TabsTrigger value="templates" className="flex items-center space-x-2">
+              <Image size={18} />
+              <span>{getLocalizedText('templates')}</span>
+            </TabsTrigger>
+            <TabsTrigger value="reels" className="flex items-center space-x-2">
+              <Play size={18} />
+              <span>{getLocalizedText('reels')}</span>
+            </TabsTrigger>
+            <TabsTrigger value="benefits" className="flex items-center space-x-2">
+              <Heart size={18} />
+              <span>{getLocalizedText('benefits')}</span>
+            </TabsTrigger>
+          </TabsList>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {kolamDesigns.map((design) => (
-              <Card key={design.id} className="group hover:glow-primary transition-all duration-300 bg-card/50 backdrop-blur-sm border-primary/20">
-                <CardHeader className="p-4">
-                  <div className="aspect-square bg-muted rounded-lg mb-3 overflow-hidden relative">
-                    <img 
-                      src={design.thumbnail} 
-                      alt={design.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                      <div className="flex space-x-2">
-                        <Button size="sm" variant="secondary" className="glow-accent">
-                          <Eye size={16} />
-                        </Button>
-                        <Button size="sm" variant="secondary" className="glow-primary">
-                          <Download size={16} />
+          {/* Templates Tab */}
+          <TabsContent value="templates" className="space-y-6">
+            <div className="mb-6">
+              <p className="text-muted-foreground text-lg max-w-4xl">
+                {getLocalizedText('exploreTemplates')}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {kolamTemplates.map((design) => (
+                <Card key={design.id} className="group hover:glow-primary transition-all duration-300 bg-card/50 backdrop-blur-sm border-primary/20">
+                  <CardHeader className="p-4">
+                    <div className="aspect-square bg-muted rounded-lg mb-3 overflow-hidden relative">
+                      <div className="w-full h-full bg-gradient-to-br from-primary/20 via-accent/20 to-secondary/20 flex items-center justify-center">
+                        <div className="text-center">
+                          <Image size={48} className="text-primary/60 mx-auto mb-2" />
+                          <p className="text-xs text-muted-foreground">{design.name}</p>
+                        </div>
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+                        <div className="flex space-x-2">
+                          <Button size="sm" variant="secondary" className="glow-accent">
+                            <Eye size={16} />
+                          </Button>
+                          <Button size="sm" variant="secondary" className="glow-primary">
+                            <Download size={16} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <CardTitle className="text-lg">{design.name}</CardTitle>
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant="outline" className="text-xs">
+                        {design.difficulty}
+                      </Badge>
+                      <div className="flex items-center space-x-1">
+                        <Heart size={14} className="text-primary" />
+                        <span className="text-sm text-muted-foreground">{design.likes}</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                      {design.description}
+                    </p>
+                  </CardHeader>
+
+                  <CardContent className="p-4 pt-0">
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {design.tags.slice(0, 3).map((tag) => (
+                        <Badge key={tag} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <Button size="sm" variant="outline" className="flex-1">
+                        <Eye size={14} className="mr-2" />
+                        {getLocalizedText('viewDesign')}
+                      </Button>
+                      <Button size="sm" variant="default" className="flex-1 glow-primary">
+                        <Sparkle size={14} className="mr-2" />
+                        {getLocalizedText('useTemplate')}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Reels Tab */}
+          <TabsContent value="reels" className="space-y-6">
+            <div className="mb-6">
+              <p className="text-muted-foreground text-lg max-w-4xl">
+                {getLocalizedText('exploreReels')}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {kolamReels.map((reel) => (
+                <Card key={reel.id} className="group hover:glow-accent transition-all duration-300 bg-card/50 backdrop-blur-sm border-accent/20">
+                  <CardHeader className="p-4">
+                    <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden relative">
+                      <div className="w-full h-full bg-gradient-to-br from-accent/20 via-primary/20 to-secondary/20 flex items-center justify-center">
+                        <div className="text-center">
+                          <Play size={48} className="text-accent/60 mx-auto mb-2" />
+                          <div className="absolute bottom-2 right-2 bg-background/80 rounded px-2 py-1">
+                            <div className="flex items-center space-x-1">
+                              <Clock size={12} />
+                              <span className="text-xs">{Math.floor(reel.duration / 60)}:{(reel.duration % 60).toString().padStart(2, '0')}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <Button size="lg" variant="default" className="rounded-full glow-accent">
+                          <Play size={24} />
                         </Button>
                       </div>
                     </div>
-                  </div>
-                  
-                  <CardTitle className="text-lg">{design.name}</CardTitle>
-                  <CardDescription className="text-sm mb-2">
-                    {design.strokeCount} {getLocalizedText('strokes')} • {design.createdAt}
-                  </CardDescription>
-                  <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                    {design.description}
-                  </p>
-                </CardHeader>
-
-                <CardContent className="p-4 pt-0">
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {design.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
+                    
+                    <CardTitle className="text-lg mb-2">{reel.title}</CardTitle>
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant={reel.type === 'tutorial' ? 'default' : 'secondary'} className="text-xs">
+                        {reel.type}
                       </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {reel.difficulty}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                      {reel.description}
+                    </p>
+                  </CardHeader>
+
+                  <CardContent className="p-4 pt-0">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                        <div className="flex items-center space-x-1">
+                          <Eye size={12} />
+                          <span>{formatNumber(reel.views)} {getLocalizedText('views')}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Heart size={12} />
+                          <span>{formatNumber(reel.likes)} {getLocalizedText('likes')}</span>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleLikeReel(reel.id)}
+                        className={(likedReels || []).includes(reel.id) ? 'text-primary' : ''}
+                      >
+                        <Heart size={16} className={(likedReels || []).includes(reel.id) ? 'fill-current' : ''} />
+                      </Button>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {reel.tags.slice(0, 3).map((tag) => (
+                        <Badge key={tag} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <Button size="sm" variant="default" className="w-full glow-accent">
+                      <Play size={14} className="mr-2" />
+                      {getLocalizedText('watch')}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+
+          {/* Benefits Tab */}
+          <TabsContent value="benefits" className="space-y-6">
+            <div className="mb-6">
+              <p className="text-muted-foreground text-lg max-w-4xl">
+                {getLocalizedText('exploreBenefits')}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {kolamBenefits.map((benefit) => (
+                <Card key={benefit.id} className="group hover:glow-secondary transition-all duration-300 bg-card/50 backdrop-blur-sm border-secondary/20 p-6">
+                  <div className="mb-4">
+                    <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
+                      {getBenefitIcon(benefit.icon)}
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">{benefit.title}</h3>
+                    <p className="text-muted-foreground mb-4">{benefit.description}</p>
+                    
+                    <Badge variant="outline" className="mb-4">
+                      {benefit.category}
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-2">
+                    {benefit.details.map((detail, index) => (
+                      <div key={index} className="flex items-start space-x-2">
+                        <Star size={14} className="text-primary mt-0.5 flex-shrink-0" />
+                        <p className="text-sm text-muted-foreground">{detail}</p>
+                      </div>
                     ))}
                   </div>
 
-                  <div className="flex space-x-2">
-                    <Button size="sm" variant="outline" className="flex-1">
-                      <Eye size={14} className="mr-2" />
-                      {getLocalizedText('viewDesign')}
-                    </Button>
-                    <Button size="sm" variant="default" className="flex-1 glow-primary">
-                      <Download size={14} className="mr-2" />
-                      {getLocalizedText('downloadDesign')}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* Featured Patterns */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-6">
-            {language === 'en' && 'Featured Traditional Patterns'}
-            {language === 'ta' && 'சிறப்பு பாரம்பரிய வடிவங்கள்'}
-            {language === 'hi' && 'विशेष पारंपरिक पैटर्न'}
-            {language === 'fr' && 'Motifs traditionnels en vedette'}
-          </h2>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="p-6 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
-              <h3 className="text-xl font-semibold mb-3">
-                {language === 'en' && 'Festival Kolams'}
-                {language === 'ta' && 'திருவிழா கோலங்கள்'}
-                {language === 'hi' && 'त्योहारी कोलम'}
-                {language === 'fr' && 'Kolams de festival'}
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                {language === 'en' && 'Special designs for Diwali, Pongal, and other celebrations'}
-                {language === 'ta' && 'தீபாவளி, பொங்கல் மற்றும் பிற கொண்டாட்டங்களுக்கான சிறப்பு வடிவங்கள்'}
-                {language === 'hi' && 'दिवाली, पोंगल और अन्य उत्सवों के लिए विशेष डिज़ाइन'}
-                {language === 'fr' && 'Designs spéciaux pour Diwali, Pongal et autres célébrations'}
-              </p>
-              <Button variant="outline" className="w-full">
-                {language === 'en' && 'Explore Festival Designs'}
-                {language === 'ta' && 'திருவிழா வடிவங்களை ஆராயுங்கள்'}
-                {language === 'hi' && 'त्योहारी डिज़ाइन देखें'}
-                {language === 'fr' && 'Explorer les designs de festival'}
-              </Button>
-            </Card>
-
-            <Card className="p-6 bg-gradient-to-br from-secondary/10 to-primary/10 border-secondary/20">
-              <h3 className="text-xl font-semibold mb-3">
-                {language === 'en' && 'Daily Practice'}
-                {language === 'ta' && 'தினசரி பயிற்சி'}
-                {language === 'hi' && 'दैनिक अभ्यास'}
-                {language === 'fr' && 'Pratique quotidienne'}
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                {language === 'en' && 'Simple, elegant patterns perfect for everyday drawing'}
-                {language === 'ta' && 'அன்றாட வரைபடத்திற்கு ஏற்ற எளிய, நேர்த்தியான வடிவங்கள்'}
-                {language === 'hi' && 'रोजाना बनाने के लिए सरल, सुंदर पैटर्न'}
-                {language === 'fr' && 'Motifs simples et élégants parfaits pour le dessin quotidien'}
-              </p>
-              <Button variant="outline" className="w-full">
-                {language === 'en' && 'Browse Daily Patterns'}
-                {language === 'ta' && 'தினசரி வடிவங்களைப் பார்க்கவום்'}
-                {language === 'hi' && 'दैनिक पैटर्न देखें'}
-                {language === 'fr' && 'Parcourir les motifs quotidiens'}
-              </Button>
-            </Card>
-          </div>
-        </section>
+                  <Button size="sm" variant="outline" className="w-full mt-4">
+                    {getLocalizedText('learnMore')}
+                  </Button>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

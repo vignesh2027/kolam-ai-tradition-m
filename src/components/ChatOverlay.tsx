@@ -23,60 +23,38 @@ export function ChatOverlay({ isOpen, onClose, language }: ChatOverlayProps) {
   const { user } = useAuth();
   const t = useTranslation(language);
 
-  // Sample AI responses based on language
+  // GitHub Spark API integration for mentor responses
   const getAIResponse = async (userMessage: string): Promise<string> => {
-    // Simulate AI processing delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    try {
+      const response = await fetch('/api/mentor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          message: userMessage,
+          language: language
+        }),
+      });
 
-    const responses: Record<Language, Record<string, string>> = {
-      en: {
-        greeting: "Hello! I'm your Kolam mentor. I can help you understand the sacred geometry, cultural significance, and drawing techniques of kolam art. What would you like to learn?",
-        symmetry: "Kolam patterns are based on mathematical symmetry principles. Radial symmetry (like 8-way) creates mandala-like patterns representing cosmic harmony. Each axis represents a different spiritual direction or element.",
-        dots: "Dots in kolam represent the universe's fundamental building blocks. Traditional kolams start with a dot grid because dots symbolize potential energy - each dot can become the center of infinite possibilities.",
-        meaning: "Kolam is more than art - it's a spiritual practice. The continuous lines represent life's interconnectedness, while the geometric patterns invoke cosmic order and invite prosperity into the home.",
-        colors: "Traditional kolams use white rice flour for purity, red kumkum for energy and auspiciousness, and sometimes turmeric yellow for prosperity. Each color carries spiritual meaning.",
-        default: "That's a great question about kolam! Each pattern tells a story of cosmic harmony and spiritual balance. Try experimenting with different symmetry modes to discover new patterns."
-      },
-      ta: {
-        greeting: "வணக்கம்! நான் உங்கள் கோலம் குரு. புனித வடிவவியல், கலாச்சார முக்கியத்துவம் மற்றும் கோலம் கலையின் வரைபட நுட்பங்களைப் புரிந்துகொள்ள நான் உதவ முடியும். எதைப் பற்றி அறிய விரும்புகிறீர்கள்?",
-        symmetry: "கோலம் வடிவங்கள் கணித சமச்சீர் கொள்கைகளை அடிப்படையாகக் கொண்டவை. கதிர்வீச்சு சமச்சீர் (8-வழி போன்றது) பிரபஞ்ச ஒற்றுமையைக் குறிக்கும் மண்டல போன்ற வடிவங்களை உருவாக்குகிறது.",
-        dots: "கோலத்தில் உள்ள புள்ளிகள் பிரபஞ்சத்தின் அடிப்படை கட்டுமானத் தொகுதிகளைக் குறிக்கின்றன. பாரம்பரிய கோலங்கள் புள்ளி கட்டத்துடன் தொடங்குகின்றன.",
-        meaning: "கோலம் வெறும் கலை அல்ல - இது ஆன்மீக பயிற்சி. தொடர்ச்சியான கோடுகள் வாழ்க்கையின் பரஸ்பர தொடர்பைக் குறிக்கின்றன.",
-        colors: "பாரம்பரிய கோலங்கள் தூய்மைக்காக வெள்ளை அரிசி மாவு, சக்திக்காக சிவப்பு குங்குமம் பயன்படுத்துகின்றன.",
-        default: "கோலத்தைப் பற்றிய அருமையான கேள்வி! ஒவ்வொரு வடிவமும் பிரபஞ்ச ஒற்றுமையின் கதையைச் சொல்கிறது."
-      },
-      hi: {
-        greeting: "नमस्ते! मैं आपका कोलम गुरु हूं। मैं आपको पवित्र ज्यामिति, सांस्कृतिक महत्व, और कोलम कला की तकनीकों को समझने में मदद कर सकता हूं। आप क्या सीखना चाहते हैं?",
-        symmetry: "कोलम पैटर्न गणितीय समरूपता सिद्धांतों पर आधारित हैं। रेडियल समरूपता (जैसे 8-तरफा) मंडल जैसे पैटर्न बनाती है जो ब्रह्मांडीय सामंजस्य का प्रतिनिधित्व करते हैं।",
-        dots: "कोलम में बिंदु ब्रह्मांड के मूलभूत निर्माण खंडों का प्रतिनिधित्व करते हैं। पारंपरिक कोलम बिंदु ग्रिड से शुरू होते हैं।",
-        meaning: "कोलम केवल कला नहीं है - यह एक आध्यात्मिक अभ्यास है। निरंतर रेखाएं जीवन के अंतर्संबंध का प्रतिनिधित्व करती हैं।",
-        colors: "पारंपरिक कोलम पवित्रता के लिए सफेद चावल का आटा, ऊर्जा के लिए लाल कुमकुम का उपयोग करते हैं।",
-        default: "कोलम के बारे में बहुत अच्छा सवाल! हर पैटर्न ब्रह्मांडीय सामंजस्य की कहानी कहता है।"
-      },
-      fr: {
-        greeting: "Bonjour ! Je suis votre mentor Kolam. Je peux vous aider à comprendre la géométrie sacrée, la signification culturelle et les techniques de dessin de l'art kolam. Que souhaitez-vous apprendre ?",
-        symmetry: "Les motifs Kolam sont basés sur des principes de symétrie mathématique. La symétrie radiale (comme 8 directions) crée des motifs semblables à des mandalas représentant l'harmonie cosmique.",
-        dots: "Les points dans le kolam représentent les blocs de construction fondamentaux de l'univers. Les kolams traditionnels commencent par une grille de points.",
-        meaning: "Le Kolam n'est pas seulement de l'art - c'est une pratique spirituelle. Les lignes continues représentent l'interconnexion de la vie.",
-        colors: "Les kolams traditionnels utilisent de la farine de riz blanche pour la pureté, du kumkum rouge pour l'énergie.",
-        default: "Excellente question sur le kolam ! Chaque motif raconte une histoire d'harmonie cosmique."
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
       }
-    };
 
-    const userLower = userMessage.toLowerCase();
-    
-    if (userLower.includes('hello') || userLower.includes('hi') || userLower.includes('வணக்கம்') || userLower.includes('नमस्ते') || userLower.includes('bonjour')) {
-      return responses[language].greeting;
-    } else if (userLower.includes('symmetry') || userLower.includes('சமச்சீர்') || userLower.includes('समरूपता') || userLower.includes('symétrie')) {
-      return responses[language].symmetry;
-    } else if (userLower.includes('dot') || userLower.includes('புள்ளி') || userLower.includes('बिंदु') || userLower.includes('point')) {
-      return responses[language].dots;
-    } else if (userLower.includes('meaning') || userLower.includes('significance') || userLower.includes('அர்த்தம்') || userLower.includes('मतलब') || userLower.includes('signification')) {
-      return responses[language].meaning;
-    } else if (userLower.includes('color') || userLower.includes('நிறம்') || userLower.includes('रंग') || userLower.includes('couleur')) {
-      return responses[language].colors;
-    } else {
-      return responses[language].default;
+      const data = await response.json();
+      return data.message || "I apologize, but I'm having trouble responding right now. Please try again.";
+    } catch (error) {
+      console.error('Error calling mentor API:', error);
+      
+      // Fallback response in case API fails
+      const fallbackResponses: Record<Language, string> = {
+        en: "I'm experiencing a connection issue. Let me share this: Kolam art is a beautiful blend of mathematics and spirituality, where every pattern reflects cosmic harmony.",
+        ta: "இணைப்பு சிக்கல் உள்ளது. இதைப் பகிர்ந்து கொள்கிறேன்: கோலம் கலை கணிதம் மற்றும் ஆன்மீகத்தின் அழகான கலவையாகும்.",
+        hi: "मुझे कनेक्शन की समस्या है। यह साझा करता हूं: कोलम कला गणित और आध्यात्म का सुंदर मिश्रण है।",
+        fr: "J'ai un problème de connexion. Permettez-moi de partager ceci : l'art kolam est un beau mélange de mathématiques et de spiritualité."
+      };
+      
+      return fallbackResponses[language];
     }
   };
 

@@ -334,7 +334,9 @@ export function CanvasPage({ language }: CanvasPageProps) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       tags: [],
-      isTemplate: false
+      isTemplate: false,
+      difficulty: 'beginner',
+      category: 'modern'
     };
 
     // Save to KV store (this would be expanded to handle user galleries)

@@ -58,6 +58,36 @@ export interface KolamDesign {
   updatedAt: string;
   tags: string[];
   isTemplate: boolean;
+  description?: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  category: 'traditional' | 'modern' | 'festival' | 'geometric' | 'floral';
+  thumbnail?: string;
+  likes?: number;
+  culturalSignificance?: string;
+}
+
+export interface KolamReel {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  videoUrl?: string;
+  duration: number;
+  type: 'timelapse' | 'tutorial' | 'cultural' | 'technique';
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  tags: string[];
+  views: number;
+  likes: number;
+  createdAt: string;
+}
+
+export interface KolamBenefit {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  category: 'mental' | 'spiritual' | 'cultural' | 'artistic' | 'social';
+  details: string[];
 }
 
 export interface ChatMessage {
