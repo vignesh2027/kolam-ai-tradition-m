@@ -32,14 +32,15 @@ export function CanvasPage({ language }: CanvasPageProps) {
   const [strokes, setStrokes] = useKV<Stroke[]>('kolam-current-design', []);
   const [history, setHistory] = useState<Stroke[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
+  const [showTutorial, setShowTutorial] = useState(true);
   
-  // Drawing settings
+  // Drawing settings optimized for first-time users
   const [symmetryMode, setSymmetryMode] = useState<SymmetryMode>('radial-8');
   const [brushType, setBrushType] = useState<BrushType>('thin');
-  const [brushSize, setBrushSize] = useState([2]);
-  const [currentColor, setCurrentColor] = useState('#FFFFFF');
+  const [brushSize, setBrushSize] = useState([3]);
+  const [currentColor, setCurrentColor] = useState('#4ECDC4'); // Beautiful teal by default
   const [gridVisible, setGridVisible] = useState(true);
-  const [gridSize, setGridSize] = useState([20]);
+  const [gridSize, setGridSize] = useState([30]); // Larger grid for easier kolam creation
 
   const t = useTranslation(language);
   const { user, isAuthenticated } = useAuth();
@@ -143,6 +144,25 @@ export function CanvasPage({ language }: CanvasPageProps) {
     });
 
     ctx.setLineDash([]);
+
+    // Draw center indicator for radial symmetry
+    if (symmetryMode.startsWith('radial')) {
+      const centerX = canvasSize.width / 2;
+      const centerY = canvasSize.height / 2;
+      
+      // Pulsing center circle
+      ctx.fillStyle = 'oklch(0.75 0.18 180 / 0.6)';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Outer ring
+      ctx.strokeStyle = 'oklch(0.75 0.18 180 / 0.8)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
+      ctx.stroke();
+    }
   };
 
   const drawStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke) => {
@@ -188,7 +208,7 @@ export function CanvasPage({ language }: CanvasPageProps) {
     ctx.setLineDash([]);
   };
 
-  const getMousePos = (e: React.MouseEvent<HTMLCanvasElement>): Point => {
+  const getPointerPos = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>): Point => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
 
@@ -196,22 +216,37 @@ export function CanvasPage({ language }: CanvasPageProps) {
     const scaleX = canvasSize.width / rect.width;
     const scaleY = canvasSize.height / rect.height;
 
+    let clientX: number, clientY: number;
+
+    if ('touches' in e) {
+      // Touch event
+      if (e.touches.length === 0) return { x: 0, y: 0 };
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      // Mouse event
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
     return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
     };
   };
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
     setIsDrawing(true);
-    const point = getMousePos(e);
+    const point = getPointerPos(e);
     setCurrentStroke([point]);
   };
 
-  const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
     if (!isDrawing) return;
 
-    const point = getMousePos(e);
+    const point = getPointerPos(e);
     setCurrentStroke(prev => [...prev, point]);
 
     // Draw preview stroke
@@ -235,7 +270,8 @@ export function CanvasPage({ language }: CanvasPageProps) {
     }
   };
 
-  const stopDrawing = () => {
+  const stopDrawing = (e?: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (e) e.preventDefault();
     if (!isDrawing || currentStroke.length === 0) return;
 
     const newStroke: Stroke = {
@@ -322,6 +358,44 @@ export function CanvasPage({ language }: CanvasPageProps) {
   return (
     <div className="min-h-screen bg-background pt-20 px-4">
       <div className="container mx-auto max-w-7xl">
+        {/* Tutorial Overlay */}
+        {showTutorial && (
+          <Card className="mb-6 p-6 bg-gradient-to-r from-primary/10 to-accent/10 border-primary/30 glow-soft">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold mb-3 text-primary">
+                  {language === 'en' && '🌟 Welcome to Your First Kolam!'}
+                  {language === 'ta' && '🌟 உங்கள் முதல் கோலத்திற்கு வரவேற்கிறோம்!'}
+                  {language === 'hi' && '🌟 आपके पहले कोलम में आपका स्वागत है!'}
+                  {language === 'fr' && '🌟 Bienvenue à votre premier Kolam !'}
+                </h3>
+                <div className="text-sm text-muted-foreground space-y-2">
+                  <p>
+                    {language === 'en' && '✨ You\'re set up with 8-way radial symmetry - every stroke you draw will be beautifully mirrored 8 times!'}
+                    {language === 'ta' && '✨ நீங்கள் 8-வழி கதிர்வீச்சு சமச்சீர் கொண்டு அமைக்கப்பட்டுள்ளீர்கள் - நீங்கள் வரையும் ஒவ்வொரு கோடும் 8 முறை அழகாக பிரதிபலிக்கப்படும்!'}
+                    {language === 'hi' && '✨ आप 8-दिशा रेडियल समरूपता के साथ सेट हैं - आपकी हर स्ट्रोक 8 बार खूबसूरती से मिरर होगी!'}
+                    {language === 'fr' && '✨ Vous êtes configuré avec une symétrie radiale à 8 directions - chaque trait que vous dessinez sera magnifiquement reflété 8 fois !'}
+                  </p>
+                  <p>
+                    {language === 'en' && '🎨 Start by drawing simple curves from the center outward. Watch the magic happen!'}
+                    {language === 'ta' && '🎨 மையத்திலிருந்து வெளிப்புறமாக எளிய வளைவுகள் வரைவதன் மூலம் தொடங்குங்கள். மந்திரம் நடப்பதைப் பாருங்கள்!'}
+                    {language === 'hi' && '🎨 केंद्र से बाहर की ओर सरल वक्र बनाना शुरू करें। जादू होते देखें!'}
+                    {language === 'fr' && '🎨 Commencez par dessiner des courbes simples du centre vers l\'extérieur. Regardez la magie opérer !'}
+                  </p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowTutorial(false)}
+                className="ml-4 text-muted-foreground hover:text-foreground"
+              >
+                ✕
+              </Button>
+            </div>
+          </Card>
+        )}
+
         {/* Toolbar */}
         <Card className="mb-6 p-4 bg-card/90 backdrop-blur-sm">
           <div className="flex flex-wrap items-center gap-4">
@@ -414,14 +488,24 @@ export function CanvasPage({ language }: CanvasPageProps) {
           {/* Canvas */}
           <div className="flex-1">
             <Card className="p-4 bg-card/50 backdrop-blur-sm">
+              <div className="mb-2 text-sm text-muted-foreground text-center">
+                {language === 'en' && '💡 Tip: Works great on mobile too! Use your finger to draw.'}
+                {language === 'ta' && '💡 குறிப்பு: மொபைலிலும் சிறப்பாக வேலை செய்கிறது! வரைய உங்கள் விரலைப் பயன்படுத்துங்கள்.'}
+                {language === 'hi' && '💡 टिप: मोबाइल पर भी बेहतरीन काम करता है! ड्रॉ करने के लिए अपनी उंगली का उपयोग करें।'}
+                {language === 'fr' && '💡 Astuce : Fonctionne parfaitement sur mobile aussi ! Utilisez votre doigt pour dessiner.'}
+              </div>
               <canvas
                 ref={canvasRef}
                 className="border-2 border-primary/20 rounded-lg w-full cursor-crosshair canvas-container"
-                style={{ maxWidth: '100%', height: 'auto', aspectRatio: '4/3' }}
+                style={{ maxWidth: '100%', height: 'auto', aspectRatio: '4/3', touchAction: 'none' }}
                 onMouseDown={startDrawing}
                 onMouseMove={draw}
                 onMouseUp={stopDrawing}
                 onMouseLeave={stopDrawing}
+                onTouchStart={startDrawing}
+                onTouchMove={draw}
+                onTouchEnd={stopDrawing}
+                onTouchCancel={stopDrawing}
               />
             </Card>
           </div>
@@ -501,25 +585,45 @@ export function CanvasPage({ language }: CanvasPageProps) {
 
               {/* Color Presets */}
               <div>
-                <Label className="text-sm font-medium mb-2 block">Color Presets</Label>
+                <Label className="text-sm font-medium mb-2 block">Sacred Colors</Label>
                 <div className="grid grid-cols-4 gap-2">
                   {[
-                    '#FFFFFF', '#FF6B6B', '#4ECDC4', '#45B7D1',
-                    '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'
+                    '#4ECDC4', // Teal (current default)
+                    '#FFFFFF', // Pure white
+                    '#FFD93D', // Golden yellow
+                    '#FF6B6B', // Coral red
+                    '#6BCF7F', // Fresh green
+                    '#A8E6CF', // Soft mint
+                    '#DDA0DD', // Lavender
+                    '#F39C12'  // Sacred saffron
                   ].map((color) => (
                     <button
                       key={color}
                       onClick={() => setCurrentColor(color)}
-                      className="w-8 h-8 rounded border-2 border-border hover:scale-110 transition-transform"
+                      className={`w-8 h-8 rounded border-2 hover:scale-110 transition-transform ${
+                        currentColor === color ? 'border-accent ring-2 ring-accent/30' : 'border-border'
+                      }`}
                       style={{ backgroundColor: color }}
                     />
                   ))}
                 </div>
               </div>
 
-              {/* Stroke Count */}
-              <div className="text-sm text-muted-foreground">
-                Strokes: {(strokes || []).length}
+              {/* Stroke Count & Status */}
+              <div className="text-sm text-muted-foreground space-y-1">
+                <div className="flex items-center justify-between">
+                  <span>Strokes:</span>
+                  <span className="font-mono">{(strokes || []).length}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Mode:</span>
+                  <span className="text-accent font-medium">8-way Radial</span>
+                </div>
+                {showTutorial && (
+                  <div className="text-xs text-primary animate-pulse">
+                    Start drawing from the center! ✨
+                  </div>
+                )}
               </div>
             </div>
           </Card>
