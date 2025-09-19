@@ -9,39 +9,52 @@ interface GalleryPageProps {
   language: Language;
 }
 
-// Sample kolam designs for demonstration
-const sampleDesigns = [
+// Authentic kolam designs from Tamil tradition
+const kolamDesigns = [
   {
     id: '1',
-    name: 'Lotus Mandala',
-    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZmYiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM0RUNEQzQiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48cGF0aCBkPSJNMTAwIDEwMG0tODAgMGE4MCA4MCAwIDEgMSAxNjAgMGE4MCA4MCAwIDEgMS0xNjAgMCIgZmlsbD0idXJsKCNnKSIgb3BhY2l0eT0iMC4zIi8+PC9zdmc+',
-    tags: ['lotus', 'mandala', 'spiritual'],
-    createdAt: '2024-01-15',
-    strokeCount: 24
+    name: 'Padi Kolam',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9InBhZGkiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9Im9rbGNoKDAuNyAwLjE1IDYwKSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0idHJhbnNwYXJlbnQiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0ib2tsY2goMC4xNSAwLjA1IDI0MCkiLz48ZyBzdHJva2U9Im9rbGNoKDAuNyAwLjE1IDYwKSIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjIwIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI0NSIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNzAiLz48cGF0aCBkPSJNMTAwIDMwTDEwMCAxNzBNMzAgMTAwTDE3MCAxMDBNNjIgNjJMMTM4IDEzOE02MiAxMzhMMTM4IDYyIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iNjAiIHI9IjUiIGZpbGw9Im9rbGNoKDAuNzUgMC4xOCAxODApIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTQwIiByPSI1IiBmaWxsPSJva2xjaCgwLjc1IDAuMTggMTgwKSIvPjxjaXJjbGUgY3g9IjE0MCIgY3k9IjEwMCIgcj0iNSIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48Y2lyY2xlIGN4PSI2MCIgY3k9IjEwMCIgcj0iNSIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48L2c+PC9zdmc+',
+    tags: ['dotted', 'traditional', 'sacred'],
+    createdAt: 'Ancient Tamil Tradition',
+    strokeCount: 8,
+    description: 'Classic dotted kolam representing harmony and protection'
   },
   {
     id: '2',
-    name: 'Geometric Harmony',
-    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImwiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNGRjZCNkIiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM0NUI3RDEiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0idXJsKCNsKSIgb3BhY2l0eT0iMC4yIi8+PC9zdmc+',
-    tags: ['geometric', 'symmetry', 'modern'],
-    createdAt: '2024-01-14',
-    strokeCount: 16
+    name: 'Lotus Kolam',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImxvdHVzIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJva2xjaCgwLjc1IDAuMTggMTgwKSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0idHJhbnNwYXJlbnQiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0ib2tsY2goMC4xNSAwLjA1IDI0MCkiLz48ZyBzdHJva2U9Im9rbGNoKDAuNyAwLjE1IDYwKSIgc3Ryb2tlLXdpZHRoPSIyLjUiIGZpbGw9Im5vbmUiPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwMCwxMDApIj48ZWxsaXBzZSByeD0iMTUiIHJ5PSI0NSIgdHJhbnNmb3JtPSJyb3RhdGUoMCkiLz48ZWxsaXBzZSByeD0iMTUiIHJ5PSI0NSIgdHJhbnNmb3JtPSJyb3RhdGUoNDUpIi8+PGVsbGlwc2Ugcng9IjE1IiByeT0iNDUiIHRyYW5zZm9ybT0icm90YXRlKDkwKSIvPjxlbGxpcHNlIHJ4PSIxNSIgcnk9IjQ1IiB0cmFuc2Zvcm09InJvdGF0ZSgxMzUpIi8+PGVsbGlwc2Ugcng9IjEwIiByeT0iMzAiIHRyYW5zZm9ybT0icm90YXRlKDIyLjUpIi8+PGVsbGlwc2Ugcng9IjEwIiByeT0iMzAiIHRyYW5zZm9ybT0icm90YXRlKDY3LjUpIi8+PGVsbGlwc2Ugcng9IjEwIiByeT0iMzAiIHRyYW5zZm9ybT0icm90YXRlKDExMi41KSIvPjxlbGxpcHNlIHJ4PSIxMCIgcnk9IjMwIiB0cmFuc2Zvcm09InJvdGF0ZSgxNTcuNSkiLz48L2c+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI4IiBmaWxsPSJva2xjaCgwLjc1IDAuMTggMTgwKSIvPjwvZz48L3N2Zz4=',
+    tags: ['lotus', 'spiritual', 'petals'],
+    createdAt: 'Classical Tamil Design',
+    strokeCount: 16,
+    description: 'Sacred lotus symbolizing purity and divine beauty'
   },
   {
     id: '3',
-    name: 'Peacock Feather',
-    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9InAiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM5NkNFQjQiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNGRkVBQTciLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48ZWxsaXBzZSBjeD0iMTAwIiBjeT0iMTAwIiByeD0iNjAiIHJ5PSI4MCIgZmlsbD0idXJsKCNwKSIgb3BhY2l0eT0iMC4zIi8+PC9zdmc+',
-    tags: ['peacock', 'traditional', 'colorful'],
-    createdAt: '2024-01-13',
-    strokeCount: 32
+    name: 'Sikku Kolam',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9InNpa2t1Ij48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSJva2xjaCgwLjU1IDAuMiAyNSkiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9InRyYW5zcGFyZW50Ii8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9Im9rbGNoKDAuMTUgMC4wNSAyNDApIi8+PGcgc3Ryb2tlPSJva2xjaCgwLjcgMC4xNSA2MCkiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSI+PGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMTAiLz48Y2lyY2xlIGN4PSIxNDAiIGN5PSI2MCIgcj0iMTAiLz48Y2lyY2xlIGN4PSI2MCIgY3k9IjE0MCIgcj0iMTAiLz48Y2lyY2xlIGN4PSIxNDAiIGN5PSIxNDAiIHI9IjEwIi8+PHBhdGggZD0iTTcwIDYwQzg1IDYwIDEwMCA3NSAxMDAgMTAwUzExNSAxNDAgMTMwIDE0ME0xMzAgNjBDMTE1IDYwIDEwMCA3NSAxMDAgMTAwUzg1IDE0MCA3MCAxNDBNNjAgNzBDNjAgODUgNzUgMTAwIDEwMCAxMDBTMTQwIDExNSAxNDAgMTMwTTYwIDEzMEM2MCAxMTUgNzUgMTAwIDEwMCAxMDBTMTQwIDg1IDE0MCA3MCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNSIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48L2c+PC9zdmc+',
+    tags: ['interwoven', 'continuous', 'complex'],
+    createdAt: 'Traditional Weaving Style',
+    strokeCount: 12,
+    description: 'Intricate interwoven pattern representing life\'s interconnections'
   },
   {
     id: '4',
-    name: 'Cosmic Spiral',
-    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48Y29uaWNhbEdyYWRpZW50IGlkPSJjIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjREREREREIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjOTY1MkQ4Ii8+PC9jb25pY2FsR3JhZGllbnQ+PC9kZWZzPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNzAiIGZpbGw9InVybCgjYykiIG9wYWNpdHk9IjAuNCIvPjwvc3ZnPg==',
-    tags: ['spiral', 'cosmic', 'mystical'],
-    createdAt: '2024-01-12',
-    strokeCount: 18
+    name: 'Rangoli Star',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9InN0YXIiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9Im9rbGNoKDAuNzUgMC4xOCAxODApIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSJ0cmFuc3BhcmVudCIvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJva2xjaCgwLjE1IDAuMDUgMjQwKSIvPjxnIHN0cm9rZT0ib2tsY2goMC43IDAuMTUgNjApIiBzdHJva2Utd2lkdGg9IjIuNSIgZmlsbD0ibm9uZSI+PHBhdGggZD0iTTEwMCAzMEwxMTUgNjVMMTUwIDY1TDEyMiA4OUwxMzIgMTI0TDEwMCAxMDBMNjggMTI0TDc4IDg5TDUwIDY1TDg1IDY1WiIvPjxwYXRoIGQ9Ik0xMDAgNDBMMTEwIDcwTDEzNSA3MEwxMTggODVMMTI0IDExMEwxMDAgOTZMNzYgMTEwTDgyIDg1TDY1IDcwTDkwIDcwWiIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iNTUiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjQwIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIyNSIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgcj0iOCIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48L2c+PC9zdmc+',
+    tags: ['star', 'geometric', 'festive'],
+    createdAt: 'Diwali Special Pattern',
+    strokeCount: 20,
+    description: 'Radiant star pattern for festivals and celebrations'
+  },
+  {
+    id: '5',
+    name: 'Peacock Kolam',
+    thumbnail: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9InBlYWNvY2siPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9Im9rbGNoKDAuNzUgMC4xOCAxODApIi8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9Im9rbGNoKDAuNyAwLjE1IDYwKSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0ib2tsY2goMC41NSAwLjIgMjUpIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9Im9rbGNoKDAuMTUgMC4wNSAyNDApIi8+PGcgc3Ryb2tlPSJva2xjaCgwLjcgMC4xNSA2MCkiIHN0cm9rZS13aWR0aD0iMi41IiBmaWxsPSJub25lIj48cGF0aCBkPSJNMTAwIDE2MEMxMDAgMTQwIDEyMCAxMzAgMTM1IDEyMEMxNDAgMTEwIDEzNSAxMDAgMTI1IDk1QzEzMCA4NSAxMjUgNzUgMTE1IDcwQzEyMCA2MCA5NSA1MCA4MCA2MEw2MCA4MEw3MCA5NUw2MCA5NUw3MCAxMDBMNjAgMTEwTDc1IDEyNUw2NSAxMzBMODAgMTQwTDkwIDE1MEMxMDAgMTYwIDEwMCAxNjAgMTAwIDE2MFoiLz48ZWxsaXBzZSBjeD0iMTMwIiBjeT0iODAiIHJ4PSIxNSIgcnk9IjEwIiBmaWxsPSJva2xjaCgwLjc1IDAuMTggMTgwKSIvPjxjaXJjbGUgY3g9IjEzNSIgY3k9IjgwIiByPSI0IiBmaWxsPSJva2xjaCgwLjU1IDAuMiAyNSkiLz48cGF0aCBkPSJNMTEwIDUwQzEyNSA0MCA5NSAzNSA4MCA0NSIgc3Ryb2tlLXdpZHRoPSIzIi8+PGNpcmNsZSBjeD0iODAiIGN5PSI5NSIgcj0iMyIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48Y2lyY2xlIGN4PSI3NSIgY3k9IjEyMCIgcj0iMyIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48Y2lyY2xlIGN4PSI5MCIgY3k9IjE0MCIgcj0iMyIgZmlsbD0ib2tsY2goMC43NSAwLjE4IDE4MCkiLz48L2c+PC9zdmc+',
+    tags: ['peacock', 'bird', 'artistic'],
+    createdAt: 'Cultural Heritage Design',
+    strokeCount: 24,
+    description: 'Graceful peacock representing beauty and divine grace'
   }
 ];
 
@@ -57,10 +70,10 @@ export function GalleryPage({ language }: GalleryPageProps) {
         fr: 'Galerie'
       },
       templates: {
-        en: 'Template Library',
-        ta: 'வார்ப்புரு நூலகம்',
-        hi: 'टेम्पलेट लाइब्रेरी',
-        fr: 'Bibliothèque de modèles'
+        en: 'Traditional Kolam Collection',
+        ta: 'பாரம்பரிய கோலம் தொகுப்பு',
+        hi: 'पारंपरिक कोलम संग्रह',
+        fr: 'Collection de Kolam Traditionnels'
       },
       myDesigns: {
         en: 'My Designs',
@@ -87,10 +100,10 @@ export function GalleryPage({ language }: GalleryPageProps) {
         fr: 'traits'
       },
       exploreTemplates: {
-        en: 'Explore beautiful kolam patterns created by our community and traditional artists. Click any design to use as a starting point for your own creation.',
-        ta: 'எங்கள் சமூகம் மற்றும் பாரம்பரிய கலைஞர்களால் உருவாக்கப்பட்ட அழகான கோலம் வடிவங்களை ஆராயுங்கள்.',
-        hi: 'हमारे समुदाय और पारंपरिक कलाकारों द्वारा बनाए गए सुंदर कोलम पैटर्न का अन्वेषण करें।',
-        fr: 'Explorez les magnifiques motifs de kolam créés par notre communauté et les artistes traditionnels.'
+        en: 'Discover authentic traditional kolam patterns from Tamil culture. Each design carries deep spiritual meaning and has been passed down through generations. Click any pattern to start your own kolam journey.',
+        ta: 'தமிழ் பண்பாட்டின் உண்மையான பாரம்பரிய கோலம் வடிவங்களைக் கண்டறியுங்கள். ஒவ்வொரு வடிவமும் ஆழ்ந்த ஆன்மீக அர்த்தத்தைக் கொண்டுள்ளது.',
+        hi: 'तमिल संस्कृति के प्रामाणिक पारंपरिक कोलम पैटर्न की खोज करें। प्रत्येक डिज़ाइन गहरा आध्यात्मिक अर्थ रखता है।',
+        fr: 'Découvrez les véritables motifs traditionnels de kolam de la culture tamoule. Chaque design porte une signification spirituelle profonde.'
       }
     };
     
@@ -118,7 +131,7 @@ export function GalleryPage({ language }: GalleryPageProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {sampleDesigns.map((design) => (
+            {kolamDesigns.map((design) => (
               <Card key={design.id} className="group hover:glow-primary transition-all duration-300 bg-card/50 backdrop-blur-sm border-primary/20">
                 <CardHeader className="p-4">
                   <div className="aspect-square bg-muted rounded-lg mb-3 overflow-hidden relative">
@@ -140,9 +153,12 @@ export function GalleryPage({ language }: GalleryPageProps) {
                   </div>
                   
                   <CardTitle className="text-lg">{design.name}</CardTitle>
-                  <CardDescription className="text-sm">
+                  <CardDescription className="text-sm mb-2">
                     {design.strokeCount} {getLocalizedText('strokes')} • {design.createdAt}
                   </CardDescription>
+                  <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                    {design.description}
+                  </p>
                 </CardHeader>
 
                 <CardContent className="p-4 pt-0">
