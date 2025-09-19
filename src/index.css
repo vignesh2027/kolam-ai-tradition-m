@@ -1,1 +1,97 @@
-/* This is where custom CSS goes */
+@import 'tailwindcss';
+@import "tw-animate-css";
+
+/* Kolam AI Custom Theme */
+:root {
+  /* Base colors with spiritual depth */
+  --background: oklch(0.15 0.05 240); /* Deep navy background */
+  --foreground: oklch(0.98 0.02 60); /* Pure white text */
+
+  --card: oklch(0.25 0.03 240); /* Charcoal cards */
+  --card-foreground: oklch(0.98 0.02 60); /* White text on cards */
+  --popover: oklch(0.25 0.03 240);
+  --popover-foreground: oklch(0.98 0.02 60);
+
+  /* Sacred geometry colors */
+  --primary: oklch(0.7 0.15 60); /* Deep saffron */
+  --primary-foreground: oklch(0.98 0.02 60); /* White on saffron */
+  --secondary: oklch(0.55 0.2 25); /* Crimson red */
+  --secondary-foreground: oklch(0.98 0.02 60); /* White on crimson */
+  --accent: oklch(0.75 0.18 180); /* Electric teal */
+  --accent-foreground: oklch(0.15 0.05 240); /* Navy on teal */
+  
+  /* Subtle supporting colors */
+  --muted: oklch(0.35 0.02 240); /* Muted background */
+  --muted-foreground: oklch(0.7 0.02 60); /* Muted text */
+  --destructive: oklch(0.55 0.25 15); /* Warning red */
+  --destructive-foreground: oklch(0.98 0.02 60);
+
+  /* Interface elements */
+  --border: oklch(0.4 0.05 240); /* Subtle borders */
+  --input: oklch(0.4 0.05 240); /* Input borders */
+  --ring: oklch(0.75 0.18 180); /* Focus rings in teal */
+
+  /* Sacred geometry radius */
+  --radius: 0.75rem;
+}
+
+/* Typography system with cultural respect */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-optical-sizing: auto;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+/* Custom glow effects for spiritual ambiance */
+.glow-soft {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.glow-primary {
+  box-shadow: 0 0 30px oklch(0.7 0.15 60 / 0.3);
+}
+
+.glow-accent {
+  box-shadow: 0 0 25px oklch(0.75 0.18 180 / 0.4);
+}
+
+/* Animated background patterns */
+.kolam-pattern {
+  background: 
+    radial-gradient(circle at 25% 25%, oklch(0.7 0.15 60 / 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, oklch(0.75 0.18 180 / 0.1) 0%, transparent 50%);
+  background-size: 100px 100px;
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { background-position: 0% 0%, 100% 100%; }
+  50% { background-position: 10% 10%, 90% 90%; }
+}
+
+/* Canvas specific styles */
+.canvas-container {
+  background: oklch(0.2 0.02 240);
+  border: 2px solid oklch(0.4 0.05 240);
+}
+
+.symmetry-line {
+  stroke: oklch(0.75 0.18 180 / 0.5);
+  stroke-width: 1;
+  stroke-dasharray: 5,5;
+  animation: dash 2s linear infinite;
+}
+
+@keyframes dash {
+  to { stroke-dashoffset: -10; }
+}
+
+/* Responsive design helpers */
+@media (max-width: 768px) {
+  :root {
+    --radius: 0.5rem;
+  }
+}
